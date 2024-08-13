@@ -8,7 +8,7 @@ class User(SQLModel, table=True):
     uid: uuid.UUID = Field(
         sa_column=Column(pg.UUID , nullable=False, primary_key=True, default=uuid.uuid4)
     )    
-    email: str
+    email: str = Field(sa_column=Column(pg.VARCHAR, nullable=False, unique=True))
     name: str
     surname: str
     password: str
@@ -27,4 +27,4 @@ class Vehicle(SQLModel, table=True):
     plate: str
 
     user_uid: uuid.UUID = Field(foreign_key="users.uid")
-    user: "User.User" = Relationship(back_populates="vehicles")  
+    user: User = Relationship(back_populates="vehicles")  
