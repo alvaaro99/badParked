@@ -5,8 +5,14 @@ from .schemas import *
 
 class UserService:
 
-    async def get_user(self, user_uid:str, session: AsyncSession):
+    async def get_user_by_uid(self, user_uid:str, session: AsyncSession):
         query = select(User).where(User.uid == user_uid)
+
+        result = await session.exec(query)
+        return result.first()
+    
+    async def get_user_by_email(self, user_email:str, session: AsyncSession):
+        query = select(User).where(User.email == user_email)
 
         result = await session.exec(query)
         return result.first()
