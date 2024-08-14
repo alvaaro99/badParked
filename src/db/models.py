@@ -14,7 +14,7 @@ class User(SQLModel, table=True):
     password: str
     is_verified: bool = Field(default=False)
 
-    vehicles: List["Vehicle"] = Relationship(back_populates="user") 
+    vehicles: List["Vehicle"] = Relationship(back_populates="user", sa_relationship_kwargs={"lazy": "selectin"}) 
 
 class Vehicle(SQLModel, table=True):
     __tablename__ = 'vehicles'
