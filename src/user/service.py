@@ -1,45 +1,36 @@
-from sqlmodel.ext.asyncio.session import AsyncSession
-from sqlmodel import select
 from src.db.models import User
+from fastapi.responses import JSONResponse
 from .schemas import *
+from .password_service import verify_password
+from .repository import UserRepository
+from sqlmodel.ext.asyncio.session import AsyncSession
+from src.utils.jwt_service import create_token
 
 class UserService:
 
-    async def get_user_by_uid(self, user_uid:str, session: AsyncSession):
-        query = select(User).where(User.uid == user_uid)
+    repository = UserRepository()
 
-        result = await session.exec(query)
-        return result.first()
-    
-    async def get_user_by_email(self, user_email:str, session: AsyncSession):
-        query = select(User).where(User.email == user_email)
+    async def register(self, user_data: UserCreateSchema, session: AsyncSession):
+        return await self.repository.create_user(user_data,session)
 
-        result = await session.exec(query)
-        return result.first()
 
-    async def create_user(self, user_data: UserCreateSchema, session: AsyncSession):
-        new_user = User(**user_data.model_dump())
+    async def login(self, user_data: UserLoginSchema, session:AsyncSession) -> User:
+        user: User = await self.repository.get_user_by_email(user_data.email,session)
+        if user is None:
+            # raise NotFound
+            return None
+        if not verify_password(user_data.password,user.password):
+            # raise Incorrect
+            return None
+        user_data = {'email':user.email,'fullname':f'{user.name} {user.surname}'}
+        access_token = create_token(user_data)
+        refresh_token = create_token(user_data,refresh=True)
 
-        session.add(new_user)
-        await session.commit()
-
-        return new_user
-
-    async def update_user(self, user_uid: str, user_data: UserUpdateSchema, session: AsyncSession):
-        user_to_update: User = await self.get_user(user_uid)
-
-        for key, value in user_data.model_dump().items():
-            setattr(user_to_update,key,value)
-
-        await session.commit()
-
-        return user_to_update
-    
-    async def delete_user(self, user_uid: str, session: AsyncSession):
-        user_to_delete = await self.get_user(user_uid, session)
-        if user_to_delete is not None:
-            await session.delete(user_to_delete)
-            await session.commit()
-
-            return 'Deleted'
-        return None
+        return JSONResponse(
+            content = {
+                'message':'Login successfull',
+                'access_token':access_token,
+                'refresh_token':refresh_token
+            }
+        )
+        
