@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+from typing import Optional
 
 class UserCreateSchema(BaseModel):
     name:str
@@ -11,8 +12,8 @@ class UserLoginSchema(BaseModel):
     password:str
 
 class UserUpdateSchema(BaseModel):
-    name:str
-    surname:str
-    email:str
-    password:str
-    is_verified:bool
+    name:Optional[str] = None
+    surname:Optional[str] = None
+    email:Optional[str] = None
+    password:Optional[str] = None
+    is_verified:Optional[bool] = None

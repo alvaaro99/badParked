@@ -37,12 +37,15 @@ class UserRepository():
             return True
         return False
 
-    async def update_user(self, user_uid: str, user_data: UserUpdateSchema, session: AsyncSession) -> User:
-        user_to_update: User = await self.get_user(user_uid)
+    async def update_user(self, user_saved: User, user_data: UserUpdateSchema, session: AsyncSession) -> User:
+        
+        if user_data.password is not None and user_data.password != user_saved.password:
+            user_data.password = generate_hash_password(user_data.password)
 
         for key, value in user_data.model_dump().items():
-            setattr(user_to_update,key,value)
+            if value is not None:
+                setattr(user_saved,key,value)
 
         await session.commit()
 
-        return user_to_update
+        return user_saved
