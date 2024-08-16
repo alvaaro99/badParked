@@ -22,7 +22,7 @@ def create_token(user_data: dict, refresh: bool = False):
 
 def decode_token(token: str) -> dict:
     try:
-        token_decoded = jwt.decode(token,key=Config.JWT_SECRET)
+        token_decoded = jwt.decode(token,key=Config.JWT_SECRET,algorithms=['HS256'])
     except jwt.PyJWTError as error:
         logging.exception(error)
         return None
