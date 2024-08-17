@@ -39,8 +39,6 @@ class UserRepository():
 
     async def update_user(self, user_saved: User, user_data: UserUpdateSchema, session: AsyncSession) -> User:
         
-        if user_data.password is not None and user_data.password != user_saved.password:
-            user_data.password = generate_hash_password(user_data.password)
 
         for key, value in user_data.model_dump().items():
             if value is not None:
