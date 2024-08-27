@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from contextlib import asynccontextmanager
 from .db import database
 from .user.routes import user_router
+from .vehicle.routes import vehicle_router
 
 @asynccontextmanager
 async def life_span(app:FastAPI):
@@ -14,7 +15,4 @@ async def life_span(app:FastAPI):
 app = FastAPI(lifespan=life_span)
 
 app.include_router(user_router,prefix='/api/user', tags=['user'])
-
-@app.get("/")
-def read_root():
-    return {"Hello": "World"}
+app.include_router(vehicle_router, prefix='/api/vehicle',tags=['vehicle'])
