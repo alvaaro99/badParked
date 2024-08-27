@@ -16,15 +16,18 @@ access_token_bearer = AccessTokenBearer()
 async def signup(user_data: UserCreateSchema, session: AsyncSession = Depends(get_session)):
 
     new_user = await user_service.register(user_data,session)
-    print(new_user)
     return new_user
 
 @user_router.post("/login", status_code=status.HTTP_200_OK)
 async def signup(user_data: UserLoginSchema, session: AsyncSession = Depends(get_session)):
     response = await user_service.login(user_data,session)
-    print(response)
     return response
 
 @user_router.put('/update', status_code=status.HTTP_200_OK)
 async def update(user_data: UserUpdateSchema, session: AsyncSession = Depends(get_session), user_requesting: User = Depends(get_current_user)):
     return await user_service.update(user_requesting, user_data, session)
+
+
+@user_router.delete('/delete', status_code=status.HTTP_200_OK)
+async def delete(session: AsyncSession = Depends(get_session), user: User = Depends(get_current_user)):
+    return await user_service.delete(user, session)
