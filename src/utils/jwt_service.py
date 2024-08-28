@@ -2,6 +2,7 @@ from datetime import timedelta, datetime
 import jwt
 import logging
 from src.config import Config
+import uuid
 
 
 ACCESS_TOKEN_EXPIRY = 3600
@@ -14,6 +15,7 @@ def create_token(user_data: dict, refresh: bool = False):
     payload['exp'] = datetime.now() + (
         timedelta(days=REFRESH_TOKEN_EXPIRY) if refresh else timedelta(seconds=ACCESS_TOKEN_EXPIRY)
     )
+    payload['jti'] = str(uuid.uuid4())
 
     payload['refresh'] = refresh
 
