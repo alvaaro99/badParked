@@ -3,6 +3,8 @@ import jwt
 import logging
 from src.config import Config
 import uuid
+from itsdangerous import URLSafeTimedSerializer
+from src.db.models import User
 
 
 ACCESS_TOKEN_EXPIRY = 3600
@@ -29,3 +31,20 @@ def decode_token(token: str) -> dict:
         logging.exception(error)
         return None
     return token_decoded
+
+serializer = URLSafeTimedSerializer(
+    secret_key=Config.JWT_SECRET, salt="email-verification"
+)
+
+def create_url_safe_token(user: User):
+    user_data = {'email':user.email,'fullname':f'{user.name} {user.surname}'}
+    token = serializer.dumps(user_data)
+    return token
+
+def decode_url_safe_token(token:str):
+    try:
+        token_data = serializer.loads(token)
+        return token_data
+    
+    except Exception as e:
+        logging.error(str(e))
