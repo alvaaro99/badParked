@@ -37,7 +37,7 @@ serializer = URLSafeTimedSerializer(
 )
 
 def create_url_safe_token(user: User):
-    user_data = {'email':user.email,'fullname':f'{user.name} {user.surname}'}
+    user_data = {'email':user.email}
     token = serializer.dumps(user_data)
     return token
 

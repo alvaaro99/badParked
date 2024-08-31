@@ -11,6 +11,10 @@ class UserLoginSchema(BaseModel):
     email:str
     password:str
 
+class UserVerifySchema(BaseModel):
+    email:str
+    is_verified:bool = True
+
 class UserUpdateSchema(BaseModel):
     name:Optional[str] = None
     surname:Optional[str] = None

@@ -9,12 +9,18 @@ from src.db.models import User
 from src.utils import mail_service
 from src.config import Config
 from fastapi.responses import JSONResponse
-from src.utils.jwt_service import create_token, create_url_safe_token
+from src.utils.jwt_service import create_token, create_url_safe_token, decode_url_safe_token
 
 
 user_router = APIRouter()
 user_service = UserService()
 access_token_bearer = AccessTokenBearer()
+
+@user_router.get('/verify/{url_token}', status_code=status.HTTP_200_OK)
+async def verify(url_token: str, session: AsyncSession = Depends(get_session)):
+    token_data: dict = decode_url_safe_token(url_token)
+    user_to_verify = UserVerifySchema(email=token_data.get('email'))
+    return await user_service.verify(user_to_verify, session)
 
 
 @user_router.post("/signup", status_code=status.HTTP_201_CREATED)
