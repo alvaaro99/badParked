@@ -26,6 +26,7 @@ class Vehicle(SQLModel, table=True):
     name: str
     plate: str
     color:str
+    showing: bool = False
 
     user_uid: uuid.UUID = Field(foreign_key="users.uid")
     user: User = Relationship(back_populates="vehicles")  
