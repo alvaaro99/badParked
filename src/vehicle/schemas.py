@@ -8,6 +8,7 @@ class VehicleCreateSchema(BaseModel):
     plate:str
     color:str
     user_uid:Optional[str] = None
+    showing: bool = False
 
 class VehicleUpdateSchema(BaseModel):
     uid:str
@@ -16,3 +17,4 @@ class VehicleUpdateSchema(BaseModel):
     model:Optional[str] = None
     plate:Optional[str] = None
     color:Optional[str] = None
+    showing: Optional[bool] = None
