@@ -10,7 +10,9 @@ class VehicleService:
         return await self.repository.get_all_by_user_uid(user_uid, session)
     
     async def get_one(self,vehicle_uid:str,user_uid:str, session:AsyncSession):
-        return await self.repository.get_by_uid_and_user_uid(vehicle_uid,user_uid,session)
+        vehicle = await self.repository.get_by_uid(vehicle_uid,session)
+        if vehicle.user_uid == user_uid or vehicle.showing is True:
+            return vehicle
 
     async def create(self, vehicle_data: VehicleCreateSchema, user_uid: str, session: AsyncSession):
         vehicle_data.user_uid = user_uid
