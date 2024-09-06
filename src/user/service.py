@@ -21,7 +21,7 @@ class UserService:
             # TODO: raise Incorrect
             return None
         
-        return self.generate_data_token(user, 'Login Succesfull')
+        return user
 
     
 

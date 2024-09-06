@@ -1,10 +1,12 @@
 from fastapi import APIRouter, status, Depends
+from fastapi.responses import FileResponse
 from .service import VehicleService
 from .schemas import *
 from src.db.database import get_session
 from src.db.models import User
 from sqlmodel.ext.asyncio.session import AsyncSession
 from src.user.dependencies import get_current_user
+from src.utils.qrcode_service import generate_qrcode
 
 vehicle_router = APIRouter()
 vehicle_service = VehicleService()
@@ -32,3 +34,9 @@ async def new_vehicle(vehicle_data: VehicleUpdateSchema, session: AsyncSession =
 @vehicle_router.delete('/{vehicle_uid}', status_code=status.HTTP_200_OK)
 async def delete_vehicle(vehicle_uid:str, session: AsyncSession = Depends(get_session), user: User = Depends(get_current_user)):
     await vehicle_service.delete(vehicle_uid, user.uid, session)
+
+@vehicle_router.get('/generate/{vehicle_uid}')
+async def generate_qr(vehicle_uid: str, session: AsyncSession = Depends(get_session), user: User = Depends(get_current_user)):
+    vehicle = await vehicle_service.get_one(vehicle_uid,user.uid, session)
+    qr_code_path = generate_qrcode(vehicle)
+    return FileResponse(qr_code_path)
